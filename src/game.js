@@ -29,15 +29,24 @@ export default class Game {
         //Create game objects
         this.paddle = new Paddle(this.canvas.width, this.canvas.height);
         this.bricks = new Bricks(this.canvas.width, this.canvas.height);
-        this.ball = new Ball(this.paddle);
+        this.ball = new Ball(this);
 
         // Start the game loop
-        this.interval = setInterval(this.loop, 500);
+        this.interval = setInterval(this.loop, 300);
     }
 
 
     handleKeyDown(event) {
         event.preventDefault();
+        if (this.gameState === "new") {
+            switch (event.key) {
+                case ' ':
+                    this.ball.shoot("right");
+                    this.gameState = "running"
+                    break;
+            }
+            return;
+        }
         switch (event.key) {
             case 'a':
             case 'ArrowLeft':
@@ -47,20 +56,18 @@ export default class Game {
             case 'ArrowRight':
                 this.paddle.move("right");
                 break;
-            case ' ':
-            case 'SpaceBar':
-                if (this.gameState == "new") {
-                    this.ball.shoot("right");
-
-                }
-                break;
         }
         this.render();
     }
 
+    gameOver(){
+        this.gameState = "over";
+        alert("over");
+    }
+
 
     update() {
-        if (this.gameState != "over") {
+        if (this.gameState !== "over") {
             this.ball.update();
         }
     }

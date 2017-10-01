@@ -1,8 +1,12 @@
 export default class Ball {
-    constructor(paddle) {
-        this.paddle = paddle;
-        this.x = paddle.x1;
-        this.y = paddle.y - 2;
+    constructor(game) {
+        this.game = game;
+        this.paddle = game.paddle;
+        this.bricks = game.bricks;
+        this.width = game.canvas.width;
+        this.height = game.canvas.height;
+        this.x = this.paddle.x1;
+        this.y = this.paddle.y - 2;
         this.vx = 0;
         this.vy = 0;
         this.update = this.update.bind(this);
@@ -11,8 +15,13 @@ export default class Ball {
     }
 
     update() {
-        this.x = Math.floor(this.x + this.vx);
+        if (this.x === 0) this.vx = -this.vx;
+        if (this.x === this.width-1) this.vx = -this.vx;
+        if (this.y >= this.height-1) return this.game.gameOver();
+        if (this.y === 0) this.vy = -this.vy;
+
         this.y = Math.floor(this.y + this.vy);
+        this.x = Math.floor(this.x + this.vx);
 
     }
 
@@ -24,6 +33,6 @@ export default class Ball {
     }
 
     shoot() {
-        this.vx = this.vy = -2;
+        this.vx = this.vy = -1;
     }
 }

@@ -15,10 +15,10 @@ export default class Bricks {
 
     render(ctx) {
         ctx.save();
-        this.bricks.forEach((brickRow, rowIdex) => {
+        this.bricks.forEach((brickRow, rowIndex) => {
             brickRow.forEach((brick, index) => {
                 ctx.fillStyle = brick;
-                ctx.fillRect(index, rowIdex, 1, 1);
+                ctx.fillRect(index, rowIndex, 1, 1);
             })
         });
 
