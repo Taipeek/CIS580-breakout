@@ -10,8 +10,12 @@ export default class Game {
 
         // Create the screen buffer canvas
         this.canvas = document.createElement('canvas');
-        this.canvas.width = 80;
-        this.canvas.height = 50;
+        this.canvasGameHeigth = 500;
+        this.canvasGameWidth = 800;
+        this.canvas.width = 800;
+        this.canvas.height = 520;
+        this.gameLoopSpeed = 5;
+        this.paddleLoopSpeed = 5;
         document.body.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
 
@@ -21,18 +25,23 @@ export default class Game {
 
         // Bind class functions
         this.handleKeyDow = this.handleKeyDown.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.clearPaddleLoop = this.clearPaddleLoop.bind(this);
         this.update = this.update.bind(this);
         this.render = this.render.bind(this);
-        this.loop = this.loop.bind(this);
+        this.gameLoop = this.gameLoop.bind(this);
+        this.paddleLoop = this.paddleLoop.bind(this);
         window.onkeydown = this.handleKeyDow;
+        window.onkeyup = this.handleKeyUp;
 
         //Create game objects
-        this.paddle = new Paddle(this.canvas.width, this.canvas.height);
-        this.bricks = new Bricks(this.canvas.width, this.canvas.height);
+        this.paddle = new Paddle(this.canvasGameWidth, this.canvasGameHeigth);
+        this.bricks = new Bricks(this.canvasGameWidth, this.canvasGameHeigth);
         this.ball = new Ball(this);
 
         // Start the game loop
-        this.interval = setInterval(this.loop, 300);
+        this.gameLoopInterval = setInterval(this.gameLoop, this.gameLoopSpeed);
+        this.paddleLoopInterval = null;
     }
 
 
@@ -47,17 +56,41 @@ export default class Game {
             }
             return;
         }
+        if(this.paddleLoopInterval !== null) return;
         switch (event.key) {
             case 'a':
             case 'ArrowLeft':
-                this.paddle.move("left");
+                this.paddle.direction = "left";
+                this.paddleLoopInterval = setInterval(this.paddleLoop, this.paddleLoopSpeed);
                 break;
             case 'd':
             case 'ArrowRight':
-                this.paddle.move("right");
+                this.paddle.direction = "right";
+                this.paddleLoopInterval = setInterval(this.paddleLoop, this.paddleLoopSpeed);
                 break;
         }
         this.render();
+    }
+
+    handleKeyUp(event) {
+        event.preventDefault();
+        switch (event.key) {
+            case 'a':
+            case 'ArrowLeft':
+                this.clearPaddleLoop();
+                break;
+            case 'd':
+            case 'ArrowRight':
+                this.clearPaddleLoop();
+                break;
+        }
+        this.render();
+    }
+
+    clearPaddleLoop(){
+        this.paddle.direction = "none";
+        clearInterval(this.paddleLoopInterval);
+        this.paddleLoopInterval = null;
     }
 
     gameOver(){
@@ -82,8 +115,13 @@ export default class Game {
 
     }
 
-    loop() {
+    gameLoop() {
         this.update();
         this.render();
     }
+
+    paddleLoop(){
+        this.paddle.move();
+    }
+
 }
