@@ -10,6 +10,8 @@ export default class Paddle {
         this.y = canvasHeight - this.height;
         this.move = this.move.bind(this);
         this.render = this.render.bind(this);
+        this.image = new Image(this.width, this.height);
+        this.image.src = "paddle.bmp"
     }
 
     move() {
@@ -27,7 +29,8 @@ export default class Paddle {
     render(ctx) {
         ctx.save();
         ctx.fillStyle = 'black';
-        ctx.fillRect(this.x1, this.y, this.width, this.height);
+        // ctx.fillRect(this.x1, this.y, this.width, this.height);
+        ctx.drawImage(this.image,this.x1,this.y);
         ctx.restore();
     }
 }

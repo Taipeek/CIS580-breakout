@@ -47,7 +47,7 @@ export default class Game {
         this.gameState = {
             status: "new",
             score: 0,
-            lives: 1,
+            lives: 3,
             level: 1
         };
         //Create game objects
@@ -73,7 +73,7 @@ export default class Game {
                     }
                     this.ball.shoot();
                     this.gameLoopInterval = setInterval(this.gameLoop, this.gameLoopSpeed());
-                    this.gameState.status = "running"
+                    this.gameState.status = "running";
                     break;
             }
             return;

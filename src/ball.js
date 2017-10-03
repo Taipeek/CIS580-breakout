@@ -6,6 +6,7 @@ export default class Ball {
         this.bricks = game.bricks;
         this.width = game.canvasGameWidth;
         this.height = game.canvasGameHeigth;
+        this.speed = 4;
         this.x = this.paddle.x1 + this.paddle.width / 2;
         this.y = this.paddle.y - this.radius;
         this.vx = 0;
@@ -43,9 +44,11 @@ export default class Ball {
     }
 
     getPaddleAngle() {
-        this.vy = -this.vy;
-        this.y = this.y + 2 * this.vy;
-        this.x = this.x + 2 * this.vx;
+        let center = this.paddle.x1 + this.paddle.width / 2;
+        this.vx += this.x > center ? (this.x - center) / 35 : -(center - this.x ) / 35;
+        this.vy = -Math.sqrt(this.speed * this.speed - this.vx * this.vx);
+        this.y = this.y + 3 * this.vy;
+        this.x = this.x + 3 * this.vx;
         this.paddleHitSound.play();
 
     }
@@ -60,7 +63,8 @@ export default class Ball {
     }
 
     shoot() {
-        this.vx = this.vy = -3;
+        // this.vx = this.vy = -3;
+        this.vy = -this.speed;
         this.y = this.y + this.vy;
         this.x = this.x + this.vx;
     }

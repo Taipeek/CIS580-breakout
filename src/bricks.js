@@ -2,8 +2,8 @@ export default class Bricks {
     constructor(canvasWidth, canvasHeight) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.bricksInRow = 20;
-        this.bricksInColumns = 8;
+        this.bricksInRow = 5;
+        this.bricksInColumns = 2;
         this.brickWidth = canvasWidth / this.bricksInRow;
         this.brickHeight = 10;
         this.brickCount = this.bricksInRow * this.bricksInColumns;

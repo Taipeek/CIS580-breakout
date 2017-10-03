@@ -29,8 +29,8 @@ export default class ScoreBoard {
         ctx.fillStyle = "black";
         ctx.font = '40px sans-serif';
         ctx.fontStyle = 'bold';
-        ctx.fillText("Game Over!", this.x + 1 / 4 * this.width, this.y - 200);
-        ctx.fillText("Score: " + gameState.score, this.x + 1 / 4 * this.width, this.y - 150);
+        ctx.fillText("Game Over!", this.x + 1 / 4 * this.width, this.y - 240);
+        ctx.fillText("Score: " + gameState.score, this.x + 1 / 4 * this.width, this.y - 190);
         ctx.fillText("Press Spacebar to start a new game", this.x + 1 / 8 * this.width, this.y - 100);
         ctx.restore();
     }
