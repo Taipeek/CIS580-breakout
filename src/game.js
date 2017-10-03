@@ -4,6 +4,7 @@
 import Paddle from "./paddle";
 import Bricks from "./bricks";
 import Ball from "./ball";
+import ScoreBoard from "./scoreBoard";
 
 export default class Game {
     constructor() {
@@ -16,11 +17,16 @@ export default class Game {
         this.canvas.height = 520;
         this.gameLoopSpeed = 5;
         this.paddleLoopSpeed = 5;
+        this.gameOverSound = new Audio(process.env.PUBLIC_URL +"./gameOver.waw");
         document.body.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
 
         //Game state
-        this.gameState = "new";
+        this.gameState = {
+            status: "new",
+            score: 0,
+            lives: 3
+        };
 
 
         // Bind class functions
@@ -38,25 +44,30 @@ export default class Game {
         this.paddle = new Paddle(this.canvasGameWidth, this.canvasGameHeigth);
         this.bricks = new Bricks(this.canvasGameWidth, this.canvasGameHeigth);
         this.ball = new Ball(this);
+        this.scoreBoard = new ScoreBoard(0, this.canvasGameHeigth, this.canvas.width, this.canvas.height - this.canvasGameHeigth);
 
         // Start the game loop
-        this.gameLoopInterval = setInterval(this.gameLoop, this.gameLoopSpeed);
+        this.gameLoopInterval = null;
         this.paddleLoopInterval = null;
+
+        //initial render
+        this.render();
     }
 
 
     handleKeyDown(event) {
         event.preventDefault();
-        if (this.gameState === "new") {
+        if (this.gameState.status === "new" || this.gameState.status === "standby") {
             switch (event.key) {
                 case ' ':
-                    this.ball.shoot("right");
-                    this.gameState = "running"
+                    this.ball.shoot();
+                    this.gameLoopInterval = setInterval(this.gameLoop, this.gameLoopSpeed);
+                    this.gameState.status = "running"
                     break;
             }
             return;
         }
-        if(this.paddleLoopInterval !== null) return;
+        if (this.paddleLoopInterval !== null) return;
         switch (event.key) {
             case 'a':
             case 'ArrowLeft':
@@ -87,20 +98,31 @@ export default class Game {
         this.render();
     }
 
-    clearPaddleLoop(){
+    clearPaddleLoop() {
         this.paddle.direction = "none";
         clearInterval(this.paddleLoopInterval);
         this.paddleLoopInterval = null;
     }
 
-    gameOver(){
-        this.gameState = "over";
-        alert("over");
+    gameOver() {
+        if(--this.gameState.lives >= 1) {
+            this.paddle = new Paddle(this.canvasGameWidth, this.canvasGameHeigth);
+            this.ball = new Ball(this);
+            this.gameState.status = "standby";
+            clearInterval(this.gameLoopInterval);
+            this.gameLoopInterval = null;
+            return;
+        }
+        this.gameState.status = "over";
+        clearInterval(this.gameLoopInterval);
+        this.gameLoopInterval = null;
+        this.gameOverSound.play();
+
     }
 
 
     update() {
-        if (this.gameState !== "over") {
+        if (this.gameState.status === "running") {
             this.ball.update();
         }
     }
@@ -108,10 +130,12 @@ export default class Game {
 
     render() {
         this.ctx.fillStyle = "white";
+        this.ctx.strokeStyle = "black";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.paddle.render(this.ctx);
         this.bricks.render(this.ctx);
         this.ball.render(this.ctx);
+        this.scoreBoard.render(this.ctx,this.gameState);
 
     }
 
@@ -120,7 +144,7 @@ export default class Game {
         this.render();
     }
 
-    paddleLoop(){
+    paddleLoop() {
         this.paddle.move();
     }
 
