@@ -2,18 +2,20 @@ export default class Bricks {
     constructor(canvasWidth, canvasHeight) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.brickCount = 10;
-        this.brickWidth = canvasWidth / this.brickCount;
+        this.bricksInRow = 20;
+        this.bricksInColumns = 8;
+        this.brickWidth = canvasWidth / this.bricksInRow;
         this.brickHeight = 10;
+        this.brickCount = this.bricksInRow * this.bricksInColumns;
+        this.brickWallHeight = this.bricksInColumns * this.brickHeight;
         this.bricks = [[], [], [], [], [], [], [], []];
+        this.colors = ["yellow","yellow","green","green","orange","orange","red","red"];
         this.removeBrick = this.removeBrick.bind(this);
         this.render = this.render.bind(this);
         this.checkCollision = this.checkCollision.bind(this);
-        for (var i = 0; i < this.brickCount; i++) {
-            this.bricks[0][i] = this.bricks[1][i] = "yellow";
-            this.bricks[2][i] = this.bricks[3][i] = "green";
-            this.bricks[4][i] = this.bricks[5][i] = "orange";
-            this.bricks[6][i] = this.bricks[7][i] = "red";
+        for (let i = 0; i < this.bricksInRow; i++) {
+            for (let j = 0; j < this.bricksInColumns; j+=2)
+                this.bricks[j][i] = this.bricks[j+1][i] = this.colors[j];
         }
 
     }
@@ -31,6 +33,7 @@ export default class Bricks {
                 let ry = Bricks.clamp(y, i * this.brickHeight, i * this.brickHeight + this.brickHeight);
                 let distSquared = Math.pow(rx - x, 2) + Math.pow(ry - y, 2);
                 if (distSquared < Math.pow(radius, 2) && this.removeBrick(j, i)) {
+                    this.brickCount--;
                     if (direction < 0) {
                         if (y < i * this.brickHeight + this.brickHeight) return -1; //returns side collision from bottom
                     } else {

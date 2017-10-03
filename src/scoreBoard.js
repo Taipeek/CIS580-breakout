@@ -16,6 +16,7 @@ export default class ScoreBoard {
         ctx.fontStyle = 'bold';
         ctx.fillText("Score: "+gameState.score, this.x, this.y+18);
         ctx.fillText("Lives: "+gameState.lives, this.x+100, this.y+18);
+        ctx.fillText("Level: "+gameState.level, this.x+200, this.y+18);
         ctx.restore();
     }
 }
