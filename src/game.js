@@ -9,12 +9,7 @@ import ScoreBoard from "./scoreBoard";
 export default class Game {
     constructor() {
         //Game state
-        this.gameState = {
-            status: "new",
-            score: 0,
-            lives: 3,
-            level: 1
-        };
+        this.gameState = {};
 
         // Create the screen buffer canvas
         this.canvas = document.createElement('canvas');
@@ -26,7 +21,7 @@ export default class Game {
             return 10 / (this.gameState.level / 2)
         };
         this.paddleLoopSpeed = 5;
-        this.gameOverSound = new Audio("./public/gameOver.wav");
+        this.gameOverSound = new Audio("gameOver.wav");
         document.body.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
 
@@ -35,6 +30,7 @@ export default class Game {
         this.handleKeyDow = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.clearPaddleLoop = this.clearPaddleLoop.bind(this);
+        this.newGame = this.newGame.bind(this);
         this.update = this.update.bind(this);
         this.render = this.render.bind(this);
         this.gameLoop = this.gameLoop.bind(this);
@@ -42,6 +38,18 @@ export default class Game {
         window.onkeydown = this.handleKeyDow;
         window.onkeyup = this.handleKeyUp;
 
+        //initial render
+        this.newGame();
+        this.render();
+    }
+
+    newGame() {
+        this.gameState = {
+            status: "new",
+            score: 0,
+            lives: 1,
+            level: 1
+        };
         //Create game objects
         this.paddle = new Paddle(this.canvasGameWidth, this.canvasGameHeigth);
         this.bricks = new Bricks(this.canvasGameWidth, this.canvasGameHeigth);
@@ -52,16 +60,17 @@ export default class Game {
         this.gameLoopInterval = null;
         this.paddleLoopInterval = null;
 
-        //initial render
-        this.render();
     }
-
 
     handleKeyDown(event) {
         event.preventDefault();
         if (this.gameState.status !== "running") {
             switch (event.key) {
                 case ' ':
+                    if (this.gameState.status === "over") {
+                        this.newGame();
+                        return;
+                    }
                     this.ball.shoot();
                     this.gameLoopInterval = setInterval(this.gameLoop, this.gameLoopSpeed());
                     this.gameState.status = "running"
@@ -117,9 +126,11 @@ export default class Game {
         this.gameState.status = "over";
         clearInterval(this.gameLoopInterval);
         this.gameLoopInterval = null;
-        //this.gameOverSound.play();
+        this.gameOverSound.play();
+        this.scoreBoard.renderGameOver(this.ctx, this.gameState);
 
     }
+
 
     nextLevel() {
         this.bricks = new Bricks(this.canvasGameWidth, this.canvasGameHeigth);
@@ -147,7 +158,7 @@ export default class Game {
         this.bricks.render(this.ctx);
         this.ball.render(this.ctx);
         this.scoreBoard.render(this.ctx, this.gameState);
-
+        this.scoreBoard.renderGameOver(this.ctx, this.gameState)
     }
 
     gameLoop() {

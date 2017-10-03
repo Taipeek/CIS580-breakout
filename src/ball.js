@@ -10,8 +10,8 @@ export default class Ball {
         this.y = this.paddle.y - this.radius;
         this.vx = 0;
         this.vy = 0;
-        this.paddleHitSound = new Audio("./src/paddleHit.wav");
-        this.brickHitSound = new Audio("./public/brickHit.wav");
+        this.brickHitSound = new Audio("paddleHit.wav");
+        this.paddleHitSound = new Audio("brickHit.wav");
         this.getPaddleAngle = this.getPaddleAngle.bind(this);
         this.update = this.update.bind(this);
         this.render = this.render.bind(this);
@@ -30,7 +30,7 @@ export default class Ball {
             collision = 0;
         if (collision !== 0) {
             this.game.gameState.score++;
-
+            this.brickHitSound.play();
         }
         if (collision > 0) this.vy = -this.vy;
         if (collision < 0) this.vx = -this.vx;
@@ -46,7 +46,7 @@ export default class Ball {
         this.vy = -this.vy;
         this.y = this.y + 2 * this.vy;
         this.x = this.x + 2 * this.vx;
-        //this.paddleHitSound.play();
+        this.paddleHitSound.play();
 
     }
 
