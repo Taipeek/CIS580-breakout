@@ -6,7 +6,7 @@ export default class Ball {
         this.bricks = game.bricks;
         this.width = game.canvasGameWidth;
         this.height = game.canvasGameHeigth;
-        this.speed = 4;
+        this.speed = 5;
         this.x = this.paddle.x1 + this.paddle.width / 2;
         this.y = this.paddle.y - this.radius;
         this.vx = 0;

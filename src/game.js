@@ -13,12 +13,12 @@ export default class Game {
 
         // Create the screen buffer canvas
         this.canvas = document.createElement('canvas');
-        this.canvasGameHeigth = 500;
+        this.canvasGameHeigth = 700;
         this.canvasGameWidth = 800;
         this.canvas.width = 800;
-        this.canvas.height = 520;
+        this.canvas.height = this.canvasGameHeigth + 20;
         this.gameLoopSpeed = function () {
-            return 10 / (this.gameState.level / 2)
+            return 8 / (this.gameState.level / 2)
         };
         this.paddleLoopSpeed = 5;
         this.gameOverSound = new Audio("gameOver.wav");
@@ -40,7 +40,11 @@ export default class Game {
 
         //initial render
         this.newGame();
-        this.render();
+        setTimeout(() => {
+            //just waiting to load image
+            this.render();
+        }, 500);
+
     }
 
     newGame() {
@@ -78,17 +82,26 @@ export default class Game {
             }
             return;
         }
-        if (this.paddleLoopInterval !== null) return;
         switch (event.key) {
             case 'a':
             case 'ArrowLeft':
+                if (this.paddle.cancelLeft || this.paddle.direction === "left") return;
+                if (this.paddle.direction === "right") {
+                    this.paddle.cancelRight = true;
+                }
                 this.paddle.direction = "left";
-                this.paddleLoopInterval = setInterval(this.paddleLoop, this.paddleLoopSpeed);
+                if (this.paddleLoopInterval === null)
+                    this.paddleLoopInterval = setInterval(this.paddleLoop, this.paddleLoopSpeed);
                 break;
             case 'd':
             case 'ArrowRight':
+                if (this.paddle.cancelRight || this.paddle.direction === "right") return;
+                if (this.paddle.direction === "left") {
+                    this.paddle.cancelLeft = true;
+                }
                 this.paddle.direction = "right";
-                this.paddleLoopInterval = setInterval(this.paddleLoop, this.paddleLoopSpeed);
+                if (this.paddleLoopInterval === null)
+                    this.paddleLoopInterval = setInterval(this.paddleLoop, this.paddleLoopSpeed);
                 break;
         }
     }
@@ -98,11 +111,15 @@ export default class Game {
         switch (event.key) {
             case 'a':
             case 'ArrowLeft':
-                this.clearPaddleLoop();
+                if (this.paddle.direction === "left")
+                    this.clearPaddleLoop();
+                this.paddle.cancelLeft = false;
                 break;
             case 'd':
             case 'ArrowRight':
-                this.clearPaddleLoop();
+                if (this.paddle.direction === "right")
+                    this.clearPaddleLoop();
+                this.paddle.cancelRight = false;
                 break;
         }
         this.render();

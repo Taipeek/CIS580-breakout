@@ -3,8 +3,10 @@ export default class Paddle {
         this.cavasWidth = cavasWidth;
         this.width = 100;
         this.height = 15;
-        this.paddleSpeed = 5;
+        this.paddleSpeed = 3;
         this.direction = "none";
+        this.cancelRight = false;
+        this.cancelLeft = false;
         this.x1 = Math.floor(cavasWidth / 2 - this.width / 2);
         this.x2 = this.x1 + this.width;
         this.y = canvasHeight - this.height;
