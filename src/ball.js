@@ -6,7 +6,7 @@ export default class Ball {
         this.bricks = game.bricks;
         this.width = game.canvasGameWidth;
         this.height = game.canvasGameHeigth;
-        this.speed = 5;
+        this.speed = 4;
         this.x = this.paddle.x1 + this.paddle.width / 2;
         this.y = this.paddle.y - this.radius;
         this.vx = 0;
@@ -21,9 +21,9 @@ export default class Ball {
 
     update() {
         let collision;
-        if (this.x - this.radius <= 0) this.vx = -this.vx;
-        if (this.x + this.radius >= this.width) this.vx = -this.vx;
-        if (this.x >= this.paddle.x1 && this.x <= this.paddle.x2 && this.y + this.radius >= this.paddle.y) return this.getPaddleAngle();
+        if (this.x - this.radius <= 0 && this.vx < 0) this.vx = -this.vx;
+        if (this.x + this.radius >= this.width && this.vx > 0) this.vx = -this.vx;
+        if (this.x >= this.paddle.x1 && this.x <= this.paddle.x2 && this.y + this.radius >= this.paddle.y && this.vy > 0) return this.getPaddleAngle();
         if (this.y + this.radius >= this.height) return this.game.gameOver();
         if (this.y < this.bricks.brickWallHeight + 10)
             collision = this.bricks.checkCollision(this.x, this.y, this.radius, this.vy);
@@ -35,7 +35,7 @@ export default class Ball {
         }
         if (collision > 0) this.vy = -this.vy;
         if (collision < 0) this.vx = -this.vx;
-        else if (this.y - this.radius <= 0) this.vy = -this.vy;
+        else if (this.y - this.radius <= 0 && this.vy < 0) this.vy = -this.vy;
 
 
         this.y = this.y + this.vy;
@@ -45,7 +45,8 @@ export default class Ball {
 
     getPaddleAngle() {
         let center = this.paddle.x1 + this.paddle.width / 2;
-        this.vx += this.x > center ? (this.x - center) / 35 : -(center - this.x ) / 35;
+        this.vx += this.x > center ? (this.x - center) / 15 : -(center - this.x ) / 15;
+        this.vx = this.vx > 0 ? Math.min(this.speed - 0.3, this.vx) : -Math.min(this.speed - 0.3, -this.vx)
         this.vy = -Math.sqrt(this.speed * this.speed - this.vx * this.vx);
         this.y = this.y + 3 * this.vy;
         this.x = this.x + 3 * this.vx;
@@ -63,8 +64,9 @@ export default class Ball {
     }
 
     shoot() {
-        // this.vx = this.vy = -3;
-        this.vy = -this.speed;
+        this.vy = -Math.sqrt(this.speed * this.speed - Math.max(1, Math.pow(Math.floor(Math.random() * 100) % this.speed, 2)));
+        this.vx = (Math.random() > 0.5 ? -1 : 1) * Math.sqrt(this.speed * this.speed - this.vy * this.vy);
+
         this.y = this.y + this.vy;
         this.x = this.x + this.vx;
     }

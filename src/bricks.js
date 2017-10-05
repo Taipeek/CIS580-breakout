@@ -2,20 +2,21 @@ export default class Bricks {
     constructor(canvasWidth, canvasHeight) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.bricksInRow = 10;
-        this.bricksInColumns = 8;
+        this.bricksInRow = 5;
+        this.bricksInColumns = 10;
         this.brickWidth = canvasWidth / this.bricksInRow;
-        this.brickHeight = 10;
+        this.brickHeight = 20;
         this.brickCount = this.bricksInRow * this.bricksInColumns;
         this.brickWallHeight = this.bricksInColumns * this.brickHeight;
-        this.bricks = [[], [], [], [], [], [], [], []];
-        this.colors = ["yellow","yellow","green","green","orange","orange","red","red"];
+        this.bricks = [[], [], [], [], [], [], [], [], [], []];
+        this.colors = ["yellow", "yellow", "green", "green", "orange", "orange", "red", "red"];
         this.removeBrick = this.removeBrick.bind(this);
         this.render = this.render.bind(this);
         this.checkCollision = this.checkCollision.bind(this);
         for (let i = 0; i < this.bricksInRow; i++) {
-            for (let j = 0; j < this.bricksInColumns; j+=2)
-                this.bricks[j][i] = this.bricks[j+1][i] = this.colors[j];
+            for (let j = 0; j < this.bricksInColumns; j += 2) {
+                this.bricks[j][i] = this.bricks[j + 1][i] = this.colors[j % 8];
+            }
         }
 
     }
@@ -28,7 +29,7 @@ export default class Bricks {
     checkCollision(x, y, radius, direction) {
         for (let i = 0; i < this.bricks.length; i++) {
             for (let j = 0; j < this.bricks[i].length; j++) {
-                if (this.bricks[i][j] === null) continue;
+                if (!this.bricks[i][j]) continue;
                 let rx = Bricks.clamp(x, j * this.brickWidth, j * this.brickWidth + this.brickWidth);
                 let ry = Bricks.clamp(y, i * this.brickHeight, i * this.brickHeight + this.brickHeight);
                 let distSquared = Math.pow(rx - x, 2) + Math.pow(ry - y, 2);
@@ -45,15 +46,6 @@ export default class Bricks {
             }
         }
         return 0;
-        // return this.bricks.some((brickRow, rowIndex) => {
-        //     return brickRow.some((brick, index) => {
-        //         if (brick === null) return false;
-        //         let rx = Bricks.clamp(x, index * this.brickWidth, index * this.brickWidth + this.brickWidth);
-        //         let ry = Bricks.clamp(y, rowIndex * this.brickHeight, rowIndex * this.brickHeight + this.brickHeight);
-        //         let distSquared = Math.pow(rx - x, 2) + Math.pow(ry - y, 2);
-        //         return distSquared < Math.pow(radius, 2) && this.removeBrick(index, rowIndex);
-        //     })
-        // });
     }
 
 

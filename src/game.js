@@ -13,12 +13,12 @@ export default class Game {
 
         // Create the screen buffer canvas
         this.canvas = document.createElement('canvas');
-        this.canvasGameHeigth = 700;
+        this.canvasGameHeigth = 550;
         this.canvasGameWidth = 800;
         this.canvas.width = 800;
         this.canvas.height = this.canvasGameHeigth + 20;
         this.gameLoopSpeed = function () {
-            return 8 / (this.gameState.level / 2)
+            return 10 - (this.gameState.level);
         };
         this.paddleLoopSpeed = 5;
         this.gameOverSound = new Audio("gameOver.wav");
@@ -137,7 +137,8 @@ export default class Game {
             this.ball = new Ball(this);
             this.gameState.status = "standby";
             clearInterval(this.gameLoopInterval);
-            this.gameLoopInterval = null;
+            clearInterval(this.paddleLoopInterval);
+            this.gameLoopInterval = this.paddleLoopInterval = null;
             return;
         }
         this.gameState.status = "over";
